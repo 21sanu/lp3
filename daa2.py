@@ -1,76 +1,46 @@
 
 import heapq
 
-# Node of Huffman Tree
-class Node:
-    def __init__(self, char, freq):
-        self.char = char
-        self.freq = freq
-        self.left = None
-        self.right = None
+def huffman(chars, freq):
+    heap = []
+    count = 0
 
-    # Compare nodes by frequency
-    def __lt__(self, other):
-        return self.freq < other.freq
+    for i in range(len(chars)):
+        heapq.heappush(heap, (freq[i], count, chars[i]))
+        count += 1
 
+    while len(heap) > 1:
+        f1, _, c1 = heapq.heappop(heap)
+        f2, _, c2 = heapq.heappop(heap)
 
-# Generate Huffman Codes
-def generate_codes(root, code, huffman_codes):
-    if root is None:
-        return
+        heapq.heappush(heap, (f1 + f2, count, (c1, c2)))
+        count += 1
 
-    # Leaf node represents a character
-    if root.char is not None:
-        huffman_codes[root.char] = code if code else "0"
-        return
+    codes = {}
 
-    generate_codes(root.left, code + "0", huffman_codes)
-    generate_codes(root.right, code + "1", huffman_codes)
+    def generate(tree, code=""):
+        if isinstance(tree, str):
+            codes[tree] = code if code else "0"
+        else:
+            generate(tree[0], code + "0")
+            generate(tree[1], code + "1")
 
-
-# Build Huffman Tree using Greedy Strategy
-def huffman_encoding(chars, freqs):
-    min_heap = []
-
-    for char, freq in zip(chars, freqs):
-        heapq.heappush(min_heap, Node(char, freq))
-
-    while len(min_heap) > 1:
-        left = heapq.heappop(min_heap)
-        right = heapq.heappop(min_heap)
-
-        merged = Node(None, left.freq + right.freq)
-        merged.left = left
-        merged.right = right
-
-        heapq.heappush(min_heap, merged)
-
-    root = min_heap[0]
-    huffman_codes = {}
-    generate_codes(root, "", huffman_codes)
-
-    return huffman_codes
+    generate(heap[0][2])
+    return codes
 
 
-# Main Program
-n = int(input("Enter the number of characters: "))
+n = int(input("Enter number of characters: "))
 
 chars = []
-freqs = []
+freq = []
 
 for i in range(n):
-    char = input("Enter character: ")
-    freq = int(input("Enter frequency: "))
-    chars.append(char)
-    freqs.append(freq)
+    chars.append(input("Enter character: "))
+    freq.append(int(input("Enter frequency: ")))
 
-if n <= 0 or any(freq <= 0 for freq in freqs):
-    print("Enter at least one character with positive frequencies.")
-elif len(set(chars)) != len(chars):
-    print("Characters must be unique.")
-else:
-    codes = huffman_encoding(chars, freqs)
+codes = huffman(chars, freq)
 
-    print("\nHuffman Codes:")
-    for char, code in codes.items():
-        print(char, ":", code)
+print("Huffman Codes:")
+for ch, code in codes.items():
+    print(ch, ":", code)
+
