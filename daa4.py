@@ -5,31 +5,25 @@ wgt = []
 pft = []
 
 for i in range(n):
-    wgt.append(float(input(f"Enter weight of item {i+1}: ")))
-    pft.append(float(input(f"Enter profit of item {i+1}: ")))
+    wgt.append(int(input("Enter weight: ")))
+    pft.append(int(input("Enter profit: ")))
 
-cap = float(input("Enter knapsack capacity: "))
+cap = int(input("Enter knapsack capacity: "))
 
 if n <= 0 or cap < 0 or any(w <= 0 for w in wgt):
-    print("Enter a positive number of items, positive weights, "
-          "and non-negative capacity.")
-
-elif cap != int(cap) or any(w != int(w) for w in wgt):
-    print("Enter whole number weights and capacity.")
+    print("Enter valid values")
 
 else:
-    cap = int(cap)
-
     # Create DP table
-    dp = [[0] * (cap + 1) for _ in range(n + 1)]
+    dp = [[0] * (cap+1) for _ in range(n+1)]
 
     # Fill DP table
-    for i in range(1, n + 1):
-        for c in range(cap + 1):
+    for i in range(1, n+1):
+        for c in range(cap+1):
 
             if wgt[i-1] <= c:
                 dp[i][c] = max(
-                    pft[i-1] + dp[i-1][c-int(wgt[i-1])],
+                    pft[i-1] + dp[i-1][c-wgt[i-1]],
                     dp[i-1][c]
                 )
             else:
@@ -42,7 +36,7 @@ else:
     for i in range(n, 0, -1):
         if dp[i][c] != dp[i-1][c]:
             selected.append(i)
-            c = c - int(wgt[i-1])
+            c = c - wgt[i-1]
 
     selected.reverse()
 
