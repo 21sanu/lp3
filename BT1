@@ -1,34 +1,25 @@
 
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.0;
 
 contract BankAccount {
 
-    address public owner;
     uint public balance;
-
-    // Set account owner during deployment
-    constructor() {
-        owner = msg.sender;
-    }
 
     // Deposit money
     function deposit() public payable {
-        require(msg.sender == owner, "Not account owner");
         require(msg.value > 0, "Enter some Ether");
-
         balance = balance + msg.value;
     }
 
     // Withdraw money
     function withdraw(uint amount) public {
-        require(msg.sender == owner, "Not account owner");
         require(amount > 0, "Invalid amount");
         require(amount <= balance, "Insufficient balance");
 
         balance = balance - amount;
 
-        (bool success, ) = payable(owner).call{value: amount}("");
+        (bool success, ) = payable(msg.sender).call{value: amount}("");
         require(success, "Transfer failed");
     }
 
